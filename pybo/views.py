@@ -5,6 +5,9 @@ from pybo.models import Question, Answer
 from pybo.forms import QuestionForm, AnswerForm
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+
 
 # Create your views here.
 def index(request):
@@ -72,4 +75,38 @@ def write(request):
         form = QuestionForm()
         context = {'form': form}
         return render(request, 'pybo/question_write.html', context)
-        
+
+@login_required(login_url='common:common_login')
+def modify(request, question_id):
+    """
+    pybo 질문수정
+    """
+    question = get_object_or_404(Question, pk=question_id)
+    if request.user != question.author:
+        messages.error(request, '수정권한이 없습니다')
+        return redirect('pybo:pybo_detail', question_id=question.id)
+
+    if request.method == "POST":
+        form = QuestionForm(request.POST, instance=question)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.author = request.user
+            question.modify_date = timezone.now()  # 수정일시 저장
+            question.save()
+            return redirect('pybo:pybo_detail', question_id=question.id)
+    else:
+        form = QuestionForm(instance=question)
+    context = {'form': form}
+    return render(request, 'pybo/question_write.html', context)
+
+@login_required(login_url='common:login')
+def delete(request, question_id):
+    """
+    pybo 질문삭제
+    """
+    question = get_object_or_404(Question, pk=question_id)
+    if request.user != question.author:
+        messages.error(request, '삭제권한이 없습니다')
+        return redirect('pybo:pybo_detail', question_id=question.id)
+    question.delete()
+    return redirect('pybo:pybo_index')

@@ -12,6 +12,16 @@
                     <div>{{ question.create_date }}</div>
                 </div>
             </div>
+
+            {% if request.user == question.author %}
+                <div class="my-3">
+                    <a href="{% url 'pybo:pybo_modify' question.id  %}" 
+                    class="btn btn-sm btn-outline-secondary">수정</a>
+                    <a href="#" class="delete btn btn-sm btn-outline-secondary"
+                    data-uri="{% url 'pybo:pybo_delete' question.id  %}">삭제</a>
+                </div>
+            {% endif %}
+
         </div>
     </div>
     <h5 class="border-bottom my-3 py-2">{{question.answer_set.count}}개의 답변이 있습니다.</h5>
@@ -52,3 +62,15 @@
 </div>
 
 {% endblock content %}
+
+{% block script %}
+<script type='text/javascript'>
+$(document).ready(function(){
+    $(".delete").on('click', function() {
+        if(confirm("정말로 삭제하시겠습니까?")) {
+            location.href = $(this).data('uri');
+        }
+    });
+});
+</script>
+{% endblock %}
