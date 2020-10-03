@@ -10,4 +10,5 @@ urlpatterns = [
     path('write/', views.write, name='pybo_write'),
     path('modify/<int:question_id>/', views.modify, name='pybo_modify'),
     path('delete/<int:question_id>/', views.delete, name='pybo_delete'),
+    path('answermodify/<int:answer_id>/', views.answermodify, name='pybo_answermodify'),
 ]

@@ -37,6 +37,12 @@
                     </div>
                 </div>
             </div>
+            {% if request.user == answer.author %}
+            <div class="my-3">
+                <a href="{% url 'pybo:pybo_answermodify' answer.id  %}" 
+                class="btn btn-sm btn-outline-secondary">수정</a>
+            </div>
+            {% endif %}
         </div>
     </div>
     {% endfor %}
